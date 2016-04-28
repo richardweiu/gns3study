@@ -1,0 +1,171 @@
+汇聚层第一台
+
+第一个功能 Ethernet channel
+conf t
+hostname DS1
+int range e0/0-1
+sh
+no ip address
+no switchport
+channel-group 1 mode on
+ex
+int port-channel 1
+ip add 172.16.0.1 255.255.255.252
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+
+验证 show etherchannel summary
+第二个功能 vtp
+vtp mode server
+vtp pruning
+vtp domain menzhen
+
+第三个划分vlan
+vlan 2
+name guke
+exit
+vlan 3
+name neike
+exit
+vlan 4
+name waike
+exit
+vlan 5
+name pifu
+exit
+vlan 6
+name zhongyi
+exit
+vlan 7
+name yanke
+exit
+vlan 8
+name fangshe
+exit
+
+第四打开端口trunk模式e0/2为三层互联，3为2层互联
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+int e1/0
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+第五开启DHCP以及地址的排除
+service dhcp
+ip dhcp pool guke
+network 172.16.0.32 255.255.255.224
+default-router 172.16.0.33 255.255.255.224
+exit
+int vlan 2
+ip address 172.16.0.34 255.255.255.224
+no sh
+exit
+
+ip dhcp pool neike
+network 172.16.0.64 255.255.255.224
+default-router 172.16.0.65 255.255.255.224
+exit
+int vlan 3
+ip address 172.16.0.66 255.255.255.224
+no sh
+exit
+
+ip dhcp pool waike
+network 172.16.0.96 255.255.255.224
+default-router 172.16.0.97 255.255.255.224
+exit
+int vlan 4
+ip address 172.16.0.98 255.255.255.224
+no sh
+exit
+
+ip dhcp pool pifu
+network 172.16.0.128 255.255.255.224
+default-router 172.16.0.129 255.255.255.224
+exit
+int vlan 5
+ip address 172.16.0.130 255.255.255.224
+no sh
+exit
+
+ip dhcp pool zhongyi
+network 172.16.0.160 255.255.255.224
+default-router 172.16.0.161 255.255.255.224
+exit
+int vlan 6
+ip address 172.16.0.162 255.255.255.224
+no sh
+exit
+ip dhcp excluded-add 172.16.0.33
+ip dhcp excluded-add 172.16.0.34
+ip dhcp excluded-add 172.16.0.35
+ip dhcp excluded-add 172.16.0.65
+ip dhcp excluded-add 172.16.0.97
+ip dhcp excluded-add 172.16.0.129
+ip dhcp excluded-add 172.16.0.161
+ip dhcp excluded-add 172.16.0.193
+ip dhcp excluded-add 172.16.0.225
+
+ip dhcp excluded-add 172.16.0.66
+ip dhcp excluded-add 172.16.0.98
+ip dhcp excluded-add 172.16.0.130
+ip dhcp excluded-add 172.16.0.162
+ip dhcp excluded-add 172.16.0.194
+ip dhcp excluded-add 172.16.0.226
+
+ip dhcp excluded-add 172.16.0.67
+ip dhcp excluded-add 172.16.0.99
+ip dhcp excluded-add 172.16.0.131
+ip dhcp excluded-add 172.16.0.163
+ip dhcp excluded-add 172.16.0.195
+ip dhcp excluded-add 172.16.0.227
+
+第六 mstp的设置
+spanning-tree mode mst
+spanning-tree mst conf
+name keshi
+instance 1 vlan 2-4
+instance 2 vlan 5-6
+ex
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 8192
+
+第七 vrrp的设置
+int vlan 2
+vrrp 1 ip 172.16.0.33
+vrrp 1 priority 150
+vrrp 1 preempt
+no sh
+exit
+int vlan 3
+vrrp 2 ip 172.16.0.65
+vrrp 2 priority 150
+vrrp 2 preempt
+no sh
+exit
+int vlan 4
+vrrp 3 ip 172.16.0.97
+vrrp 3 priority 150
+vrrp 3 preempt
+no sh
+exit
+int vlan 5
+vrrp 4 ip 172.16.0.129
+vrrp 4 priority 150
+vrrp 4 preempt
+no sh
+exit
+int vlan 6
+vrrp 5 ip 172.16.0.161
+vrrp 5 priority 150
+vrrp 5 preempt
+no sh
+exit

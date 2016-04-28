@@ -1,0 +1,292 @@
+2层配置
+
+DS3汇聚的交换机2层配置
+conf t
+hostname DS3
+
+vlan 25
+name yibaoban
+exit
+vlan 26
+name yiwuke
+exit
+vlan 27
+name caiwuke
+exit
+
+vtp mode server
+vtp pruning
+vtp domain xingzheng
+
+int range e0/0-1
+sh
+switch tr en do
+swit mode tr
+channel-group 1 mode on
+ex
+int port-channel 1
+switch tr en do
+swit mode tr
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+spanning-tree mode mst
+spanning-tree mst conf
+name xingzheng
+instance 1 vlan 25-26
+instance 2 vlan 27
+ex
+spanning-tree mst 1 root primary
+spanning-tree mst 2 root sec
+
+````````````````````````````````````````````````
+DS4汇聚的交换机配置
+conf t
+hostname DS4
+vlan 25
+name yibaoban
+exit
+vlan 26
+name yiwuke
+exit
+vlan 27
+name caiwuke
+exit
+
+vtp mode server
+vtp pruning
+vtp domain xingzheng
+
+int range e0/0-1
+sh
+switch tr en do
+swit mode tr
+channel-group 1 mode on
+ex
+int port-channel 1
+switch tr en do
+swit mode tr
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+spanning-tree mode mst
+spanning-tree mst conf
+name xingzheng
+instance 1 vlan 25-26
+instance 2 vlan 27
+ex
+spanning-tree mst 2 root primary
+spanning-tree mst 1 root sec
+
+```````````````````````````````````````````````
+AS3接入的交换机配置1
+conf t
+hostname AS3
+vtp mode client
+vtp pruning 
+vtp domain xingzheng
+
+spanning-tree mode mst
+spanning-tree mst conf
+name xingzheng
+instance 1 vlan 25-26
+instance 2 vlan 27
+ex
+
+int range e0/2-3
+switch mode acc
+switch acc vlan 25
+spanning-tree portfast
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 27
+no sh
+spanning-tree portfast
+ex
+
+```````````````````````````````````````````
+AS4接入的交换机配置
+conf t
+hostname AS4
+vtp mode client
+vtp pruning 
+vtp domain xingzheng
+
+spanning-tree mode mst
+spanning-tree mst conf
+name xingzheng
+instance 1 vlan 25-26
+instance 2 vlan 27
+ex
+
+int range e0/2-3
+switch mode acc
+switch acc vlan 26
+spanning-tree portfast
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 27
+spanning-tree portfast
+no sh
+ex
+
+·······················
+三层协议的配置
+
+DS3的三层配置
+service dhcp
+ip dhcp pool yibaoban
+network 172.16.3.32 255.255.255.224
+default-router 172.16.3.33 255.255.255.224
+exit
+int vlan 25
+ip address 172.16.3.35 255.255.255.224
+no sh
+exit
+
+ip dhcp pool yiwuke
+network 172.16.3.64 255.255.255.224
+default-router 172.16.3.65 255.255.255.224
+exit
+int vlan 26
+ip address 172.16.3.67 255.255.255.224
+no sh
+exit
+
+ip dhcp pool caiwuke
+network 172.16.3.96 255.255.255.224
+default-router 172.16.3.97 255.255.255.224
+exit
+int vlan 27
+ip address 172.16.3.99 255.255.255.224
+no sh
+exit
+ip dhcp excluded-add 172.16.3.33 172.16.3.36
+ip dhcp excluded-add 172.16.3.65 172.16.3.68
+ip dhcp excluded-add 172.16.3.97 172.16.3.100
+
+ip dhcp excluded-add 172.16.3.52 172.16.3.62
+ip dhcp excluded-add 172.16.3.84 172.16.3.94 
+ip dhcp excluded-add 172.16.3.116 172.16.3.126 
+
+int vlan 25
+vrrp 24 ip 172.16.3.33
+vrrp 25 ip 172.16.3.34
+vrrp 24 priority 150
+vrrp 25 priority 100
+vrrp 24 preempt
+vrrp 25 preempt
+no sh
+exit
+
+int vlan 26
+vrrp 26 ip 172.16.3.65
+vrrp 27 ip 172.16.3.66
+vrrp 26 priority 150
+vrrp 27 priority 100
+vrrp 26 preempt
+vrrp 27 preempt
+no sh
+exit
+
+int vlan 27
+vrrp 28 ip 172.16.3.97
+vrrp 29 ip 172.16.3.98
+vrrp 28 priority 100
+vrrp 29 priority 150
+vrrp 28 preempt
+vrrp 29 preempt
+no sh
+exit
+
+`````````````````````````````````````````
+DS4的三层配置
+
+service dhcp
+ip dhcp pool yibaoban
+network 172.16.3.32 255.255.255.224
+default-router 172.16.3.34 255.255.255.224
+exit
+int vlan 25
+ip address 172.16.3.36 255.255.255.224
+no sh
+exit
+
+ip dhcp pool yiwuke
+network 172.16.3.64 255.255.255.224
+default-router 172.16.3.66 255.255.255.224
+exit
+int vlan 26
+ip address 172.16.3.68 255.255.255.224
+no sh
+exit
+
+ip dhcp pool caiwuke
+network 172.16.3.96 255.255.255.224
+default-router 172.16.3.98 255.255.255.224
+exit
+int vlan 27
+ip address 172.16.3.100 255.255.255.224
+no sh
+exit
+ip dhcp excluded-add 172.16.3.33 172.16.3.51
+ip dhcp excluded-add 172.16.3.65 172.16.3.83
+ip dhcp excluded-add 172.16.3.97 172.16.3.115
+
+int vlan 25
+vrrp 24 ip 172.16.3.33
+vrrp 25 ip 172.16.3.34
+vrrp 24 priority 100
+vrrp 25 priority 150
+vrrp 24 preempt
+vrrp 25 preempt
+no sh
+exit
+
+int vlan 26
+vrrp 26 ip 172.16.3.65
+vrrp 27 ip 172.16.3.66
+vrrp 26 priority 100
+vrrp 27 priority 150
+vrrp 26 preempt
+vrrp 27 preempt
+no sh
+exit
+
+int vlan 27
+vrrp 28 ip 172.16.3.97
+vrrp 29 ip 172.16.3.98
+vrrp 28 priority 150
+vrrp 29 priority 100
+vrrp 28 preempt
+vrrp 29 preempt
+no sh
+exit
+
+``````````````````````````
+PC的配置
+conf t
+int e0/0
+ip add dhcp
+no sh
+end

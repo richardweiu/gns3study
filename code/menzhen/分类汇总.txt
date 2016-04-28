@@ -1,0 +1,345 @@
+Level 2 config
+
+DS1de �Ķ���Э��
+conf t
+hostname DS1
+
+vlan 2
+name guke
+exit
+vlan 3
+name neike
+exit
+vlan 4
+name waike
+exit
+vlan 5
+name pifu
+
+vtp mode server
+vtp pruning
+vtp domain menzhen
+
+int range e0/0-1
+sh
+switch tr en do
+swit mode tr
+channel-group 1 mode on
+ex
+int port-channel 1
+switch tr en do
+swit mode tr
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+spanning-tree mode mst
+spanning-tree mst conf
+name menzhen
+instance 1 vlan 2-3
+instance 2 vlan 4-5
+ex
+spanning-tree mst 1 root primary
+spanning-tree mst 2 root sec
+
+`````````````````````````````````````````````
+DS2��۵Ľ���������
+conf t
+hostname DS2
+
+vlan 2
+name guke
+exit
+vlan 3
+name neike
+exit
+vlan 4
+name waike
+exit
+vlan 5
+name pifu
+
+vtp mode server
+vtp pruning
+vtp domain menzhen
+
+int range e0/0-1
+sh
+switch tr en do
+swit mode tr
+channel-group 1 mode on
+ex
+int port-channel 1
+switch tr en do
+swit mode tr
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+spanning-tree mode mst
+spanning-tree mst conf
+name menzhen
+instance 1 vlan 2-3
+instance 2 vlan 4-5
+ex
+spanning-tree mst 2 root primary
+spanning-tree mst 1 root sec
+
+``````````````````````````````````````````````
+AS1����Ľ���������1
+conf t
+hostname AS1
+vtp mode server
+vtp pruning
+vtp domain menzhen
+
+spanning-tree mode mst
+spanning-tree mst conf
+instance 1 vlan 2-3
+instance 2 vlan 4-5
+ex
+int range e0/2
+switch mode acc
+switch acc vlan 2
+spanning-tree portfast
+no sh
+ex
+int range e0/3
+switch mode acc
+switch acc vlan 3
+spanning-tree portfast
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 4
+spanning-tree portfast
+no sh
+ex
+
+````````````````````````````````````````````
+AS4����Ľ���������
+conf t
+hostname AS4
+vtp mode server
+vtp pruning
+vtp domain menzhen
+spanning-tree mode mst
+spanning-tree mst conf
+instance 1 vlan 2-3
+instance 2 vlan 4-5
+ex
+int range e0/2
+switch mode acc
+switch acc vlan 2
+spanning-tree portfast
+no sh
+ex
+int range e0/3
+switch mode acc
+switch acc vlan 3
+spanning-tree portfast
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 5
+spanning-tree portfast
+no sh
+ex
+
+````````````````````````````````````
+����Э�������
+
+DS1����������
+
+service dhcp
+ip dhcp pool guke
+network 172.16.0.32 255.255.255.224
+default-router 172.16.0.33 255.255.255.224
+exit
+int vlan 2
+ip address 172.16.0.35 255.255.255.224
+no sh
+exit
+
+ip dhcp pool neike
+network 172.16.0.64 255.255.255.224
+default-router 172.16.0.65 255.255.255.224
+exit
+int vlan 3
+ip address 172.16.0.67 255.255.255.224
+no sh
+exit
+
+ip dhcp pool waike
+network 172.16.0.96 255.255.255.224
+default-router 172.16.0.97 255.255.255.224
+exit
+int vlan 4
+ip address 172.16.0.99 255.255.255.224
+no sh
+
+ip dhcp pool pifu
+network 172.16.0.128 255.255.255.224
+default-router 172.16.0.129 255.255.255.224
+exit
+int vlan 5
+ip address 172.16.0.131 255.255.255.224
+no sh
+exit
+ip dhcp excluded-add 172.16.0.33 172.16.0.36
+ip dhcp excluded-add 172.16.0.65 172.16.0.68
+ip dhcp excluded-add 172.16.0.97 172.16.0.100
+ip dhcp excluded-add 172.16.0.129 172.16.0.132
+
+ip dhcp excluded-add 172.16.0.52 172.16.0.62
+ip dhcp excluded-add 172.16.0.84 172.16.0.94 
+ip dhcp excluded-add 172.16.0.116 172.16.0.126
+ip dhcp excluded-add 172.16.0.148 172.16.0.158 
+
+int vlan 2
+vrrp 1 ip 172.16.0.33
+vrrp 2 ip 172.16.0.34
+vrrp 1 priority 150
+vrrp 2 priority 100
+vrrp 1 preempt
+vrrp 2 preempt
+no sh
+exit
+
+int vlan 3
+vrrp 3 ip 172.16.0.65
+vrrp 4 ip 172.16.0.66
+vrrp 3 priority 150
+vrrp 4 priority 100
+vrrp 3 preempt
+vrrp 4 preempt
+no sh
+exit
+
+int vlan 4
+vrrp 5 ip 172.16.0.97
+vrrp 6 ip 172.16.0.98
+vrrp 5 priority 100
+vrrp 6 priority 150
+vrrp 5 preempt
+vrrp 6 preempt
+no sh
+exit
+
+int vlan 5
+vrrp 7 ip 172.16.0.129
+vrrp 8 ip 172.16.0.130
+vrrp 7 priority 100
+vrrp 8 priority 150
+vrrp 7 preempt
+vrrp 8 preempt
+no sh
+exit
+
+````````````````````````````````````````````
+DS2����������
+service dhcp
+ip dhcp pool guke
+network 172.16.0.32 255.255.255.224
+default-router 172.16.0.34 255.255.255.224
+exit
+int vlan 2
+ip address 172.16.0.36 255.255.255.224
+no sh
+exit
+
+ip dhcp pool neike
+network 172.16.0.64 255.255.255.224
+default-router 172.16.0.66 255.255.255.224
+exit
+int vlan 3
+ip address 172.16.0.68 255.255.255.224
+no sh
+exit
+
+ip dhcp pool waike
+network 172.16.0.96 255.255.255.224
+default-router 172.16.0.98 255.255.255.224
+exit
+int vlan 4
+ip address 172.16.0.100 255.255.255.224
+no sh
+exit
+
+ip dhcp pool pifu
+network 172.16.0.128 255.255.255.224
+default-router 172.16.0.130 255.255.255.224
+exit
+int vlan 5
+ip address 172.16.0.132 255.255.255.224
+no sh
+exit
+
+ip dhcp excluded-add 172.16.0.33 172.16.0.51
+ip dhcp excluded-add 172.16.0.65 172.16.0.83
+ip dhcp excluded-add 172.16.0.97 172.16.0.115
+ip dhcp excluded-add 172.16.0.129 172.16.0.147
+
+int vlan 2
+vrrp 1 ip 172.16.0.33
+vrrp 2 ip 172.16.0.34
+vrrp 1 priority 100
+vrrp 2 priority 150
+vrrp 1 preempt
+vrrp 2 preempt
+no sh
+exit
+
+int vlan 3
+vrrp 3 ip 172.16.0.65
+vrrp 4 ip 172.16.0.66
+vrrp 3 priority 100
+vrrp 4 priority 150
+vrrp 3 preempt
+vrrp 4 preempt
+no sh
+exit
+
+int vlan 4
+vrrp 5 ip 172.16.0.97
+vrrp 6 ip 172.16.0.98
+vrrp 5 priority 150
+vrrp 6 priority 100
+vrrp 5 preempt
+vrrp 6 preempt
+no sh
+exit
+
+int vlan 5
+vrrp 7 ip 172.16.0.129
+vrrp 8 ip 172.16.0.130
+vrrp 7 priority 150
+vrrp 8 priority 100
+vrrp 7 preempt
+vrrp 8 preempt
+no sh
+exit
+
+``````````````````````````
+PC������
+conf t
+int e0/0
+ip add dhcp
+no sh
+end

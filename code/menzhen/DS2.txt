@@ -1,0 +1,99 @@
+汇聚层第2台
+第一个功能 Ethernet channel
+conf t
+hostname DS2
+int range e0/0-1
+sh
+no ip address
+no switchport
+channel-group 1 mode on
+ex
+int port-channel 1
+ip add 172.16.0.2 255.255.255.252
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+
+验证 show etherchannel summary
+第二个功能 vtp
+vtp mode server
+vtp pruning
+vtp domain menzhen
+
+第四打开端口trunk模式e0/2为三层互联，3为2层互联
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+int e1/0
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+第五定义各个vlan的第二个网关
+int vlan 2
+ip address 172.16.0.35 255.255.255.224
+no sh
+exit
+int vlan 3
+ip address 172.16.0.67 255.255.255.224
+no sh
+exit
+int vlan 4
+ip address 172.16.0.99 255.255.255.224
+no sh
+exit
+int vlan 5
+ip address 172.16.0.131 255.255.255.224
+no sh
+exit
+int vlan 6
+ip address 172.16.0.163 255.255.255.224
+no sh
+exit
+
+第六 mstp的设置
+spanning-tree mode mst
+spanning-tree mst conf
+name keshi
+instance 1 vlan 2-4
+instance 2 vlan 5-6
+ex
+spanning-tree mst 1 priority 8192
+spanning-tree mst 2 priority 4096
+
+第七 vrrp的设置
+int vlan 2
+vrrp 1 ip 172.16.0.33
+vrrp 1 priority 100
+vrrp 1 preempt
+no sh
+exit
+int vlan 3
+vrrp 2 ip 172.16.0.65
+vrrp 2 priority 100
+vrrp 2 preempt
+no sh
+exit
+int vlan 4
+vrrp 3 ip 172.16.0.97
+vrrp 3 priority 100
+vrrp 3 preempt
+no sh
+exit
+int vlan 5
+vrrp 4 ip 172.16.0.129
+vrrp 4 priority 100
+vrrp 4 preempt
+no sh
+exit
+int vlan 6
+vrrp 5 ip 172.16.0.161
+vrrp 5 priority 100
+vrrp 5 preempt
+no sh
+exit

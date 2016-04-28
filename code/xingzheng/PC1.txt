@@ -1,0 +1,15 @@
+conf t
+hostname PC4
+int e0/0
+ip add dhcp
+no sh
+end
+
+
+conf t
+hostname PC5
+int e0/0
+ip add dhcp
+no sh
+end
+

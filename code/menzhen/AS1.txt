@@ -1,0 +1,62 @@
+接入层第一台
+第一个功能开启vtp
+conf t
+hostname AS1
+vtp mode client
+vtp pruning 
+vtp domain menzhen
+
+第二个功能以端口划分给vlan
+int range e0/2-3
+switch mode acc
+switch acc vlan 2
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 3
+no sh
+ex
+
+第三 mstp的设置
+spanning-tree mode mst
+spanning-tree mst conf
+name keshi
+instance 1 vlan 2-4
+instance 2 vlan 5-6
+ex
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 8192
+
+
+接入层第二台
+
+第一个功能开启vtp
+conf t
+hostname AS2
+vtp mode client
+vtp pruning 
+vtp domain menzhen
+
+第二个功能以端口划分给vlan
+int range e0/2-3
+switch mode acc
+switch acc vlan 2
+no sh
+ex
+int e1/0
+switch mode acc
+switch acc vlan 3
+no sh
+ex
+
+第三 mstp的设置
+spanning-tree mode mst
+spanning-tree mst conf
+name keshi
+instance 1 vlan 2-4
+instance 2 vlan 5-6
+ex
+spanning-tree mst 1 priority 4096
+spanning-tree mst 2 priority 8192
+
