@@ -2,10 +2,14 @@
 
 DS1de 的二层协议
 conf t
-hostname DS1
+hostname DS5
+
+vtp mode server
+vtp pruning
+vtp domain yiji
 
 vlan 29
-name huyan
+name huayan
 exit
 vlan 30
 name bchao
@@ -15,10 +19,6 @@ name suishi
 exit
 vlan 32
 name ctshi
-
-vtp mode server
-vtp pruning
-vtp domain yiji
 
 int range e0/0-1
 sh
@@ -52,7 +52,11 @@ spanning-tree mst 2 root sec
 `````````````````````````````````````````````
 DS2汇聚的交换机配置
 conf t
-hostname DS2
+hostname DS6
+
+vtp mode server
+vtp pruning
+vtp domain yiji
 
 vlan 29
 name huyan
@@ -65,10 +69,6 @@ name suishi
 exit
 vlan 32
 name ctshi
-
-vtp mode server
-vtp pruning
-vtp domain yiji
 
 int range e0/0-1
 sh
@@ -102,8 +102,8 @@ spanning-tree mst 2 root sec
 ``````````````````````````````````````````````
 AS1接入的交换机配置1
 conf t
-hostname AS1
-vtp mode server
+hostname AS5
+vtp mode client
 vtp pruning
 vtp domain yiji
 
@@ -134,8 +134,8 @@ ex
 ````````````````````````````````````````````
 AS4接入的交换机配置
 conf t
-hostname AS4
-vtp mode server
+hostname AS6
+vtp mode client
 vtp pruning
 vtp domain yiji
 spanning-tree mode mst
