@@ -1,0 +1,134 @@
+conf t
+host CS1
+int e0/0
+no swit
+no ip add
+sh
+channel-group 1 mode on
+ex
+int e0/1
+no swit
+no ip add
+sh
+channel-group 1 mode on
+ex
+int port-channel 1
+no swit
+ip address 172.16.10.1 255.255.255.252
+no sh
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+router ospf 1
+network 172.16.10.1 0.0.0.0 area 0
+
+
+
+conf t
+int e0/2
+no switch
+ip add 172.16.0.1 255.255.255.252
+no sh
+ex
+int e0/3
+no switch
+ip add 172.16.0.5 255.255.255.252
+no sh
+ex
+
+int e1/0
+no switch
+ip add 172.16.3.1 255.255.255.252
+no sh
+ex
+int e1/1
+no switch
+ip add 172.16.3.5 255.255.255.252
+no sh
+ex
+
+router ospf 1
+network 172.16.0.1 0.0.0.0 area 1
+network 172.16.0.5 0.0.0.0 area 1
+network 172.16.3.1 0.0.0.0 area 2
+network 172.16.3.5 0.0.0.0 area 2
+
+int e1/2
+no swit
+ip add 172.16.10.6 255.255.255.252
+ip nat inside
+no sh
+ex
+
+router ospf 1
+network 172.16.10.6 0.0.0.0 area 0
+
+``````````````````````````````````````````````````````````````````
+
+conf t
+host CS2
+int range e0/0
+no swit
+no ip add
+sh
+channel-group 1 mode on
+ex
+int range e0/1
+no swit
+no ip add
+sh
+channel-group 1 mode on
+ex
+int port-channel 1
+no swit
+ip address 172.16.10.2 255.255.255.252
+no sh
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+router ospf 1
+network 172.16.10.2 0.0.0.0 area 0
+
+
+
+int e0/2
+no switch
+ip add 172.16.0.9 255.255.255.252
+no sh
+ex
+int e0/3
+no switch
+ip add 172.16.0.13 255.255.255.252
+no sh
+ex
+
+int e1/0
+no switch
+ip add 172.16.3.9 255.255.255.252
+no sh
+ex
+int e1/1
+no switch
+ip add 172.16.3.13 255.255.255.252
+no sh
+ex
+
+router ospf 1
+network 172.16.0.9 0.0.0.0 area 1
+network 172.16.0.13 0.0.0.0 area 1
+network 172.16.3.9 0.0.0.0 area 2
+network 172.16.3.13 0.0.0.0 area 2
+
+int e1/2
+no switch
+ip add 172.16.11.2 255.255.255.252
+ip nat inside
+no sh
+ex
+
+router ospf 1
+network 172.16.11.2 0.0.0.0 area 0

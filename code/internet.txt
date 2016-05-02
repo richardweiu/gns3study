@@ -1,0 +1,5 @@
+conf t
+int s2/0
+ip add 202.106.1.1 255.255.255.0
+no sh
+ex
