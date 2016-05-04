@@ -1,8 +1,62 @@
+switchport port-security
+switchport port-security violation restrict
+
 2层协议的配置
 
-DS1de 的二层协议
+DS5de 的二层协议
 conf t
 hostname DS5
+
+vtp mode server
+vtp pruning
+vtp domain yiji
+
+vlan 29
+name huayan
+exit
+vlan 30
+name bchao
+exit
+vlan 31
+name suishi
+exit
+vlan 32
+name ctshi
+
+int range e0/0-1
+sh
+switch tr en do
+swit mode tr
+channel-group 1 mode on
+ex
+int port-channel 1
+switch tr en do
+swit mode tr
+ex
+int range e0/0-1
+no sh
+ex
+no ip cef
+
+int range e0/2-3
+switchport trunk en do
+switchport mode trunk
+no sh
+exit
+
+spanning-tree mode mst
+spanning-tree mst conf
+name yiji
+instance 1 vlan 29-30
+instance 2 vlan 31-32
+ex
+spanning-tree mst 1 root primary
+spanning-tree mst 2 root sec
+
+`````````````````````````````````````````````
+DS2汇聚的交换机配置
+conf t
+hostname DS6
 
 vtp mode server
 vtp pruning
@@ -46,63 +100,14 @@ name yiji
 instance 1 vlan 29-30
 instance 2 vlan 31-32
 ex
-spanning-tree mst 1 root primary
-spanning-tree mst 2 root sec
-
-`````````````````````````````````````````````
-DS2汇聚的交换机配置
-conf t
-hostname DS6
-
-vtp mode server
-vtp pruning
-vtp domain yiji
-
-vlan 29
-name huyan
-exit
-vlan 30
-name bchao
-exit
-vlan 31
-name suishi
-exit
-vlan 32
-name ctshi
-
-int range e0/0-1
-sh
-switch tr en do
-swit mode tr
-channel-group 1 mode on
-ex
-int port-channel 1
-switch tr en do
-swit mode tr
-ex
-int range e0/0-1
-no sh
-ex
-no ip cef
-int range e0/2-3
-switchport trunk en do
-switchport mode trunk
-no sh
-exit
-
-spanning-tree mode mst
-spanning-tree mst conf
-name yiji
-instance 1 vlan 29-30
-instance 2 vlan 31-32
-ex
-spanning-tree mst 1 root primary
-spanning-tree mst 2 root sec
+spanning-tree mst 2 root primary
+spanning-tree mst 1 root sec
 
 ``````````````````````````````````````````````
 AS1接入的交换机配置1
 conf t
 hostname AS5
+
 vtp mode client
 vtp pruning
 vtp domain yiji
@@ -112,6 +117,19 @@ spanning-tree mst conf
 instance 1 vlan 29-30
 instance 2 vlan 31-32
 ex
+
+ip dhcp snooping
+ip dhcp snooping vlan 29
+ip dhcp snooping vlan 30
+ip dhcp snooping vlan 31
+ip dhcp snooping vlan 32
+no ip dhcp snooping information option
+ip arp inspection vlan 29-32
+
+int rang e0/0-1
+ip dhcp snooping trust
+ip arp inspection trust
+
 int range e0/2
 switch mode acc
 switch acc vlan 29
@@ -135,14 +153,29 @@ ex
 AS4接入的交换机配置
 conf t
 hostname AS6
+
 vtp mode client
 vtp pruning
 vtp domain yiji
+
 spanning-tree mode mst
 spanning-tree mst conf
 instance 1 vlan 29-30
 instance 2 vlan 31-32
 ex
+
+ip dhcp snooping
+ip dhcp snooping vlan 29
+ip dhcp snooping vlan 30
+ip dhcp snooping vlan 31
+ip dhcp snooping vlan 32
+no ip dhcp snooping information option
+ip arp inspection vlan 29-32
+
+int rang e0/0-1
+ip dhcp snooping trust
+ip arp inspection trust
+
 int range e0/2
 switch mode acc
 switch acc vlan 29
@@ -168,12 +201,12 @@ ex
 DS1的三层配置
 
 service dhcp
-ip dhcp pool huyan
+ip dhcp pool huayan
 network 172.16.4.32 255.255.255.224
 default-router 172.16.4.33 255.255.255.224
 exit
 int vlan 29
-ip address 172.16.4.35 255.255.255.224
+ip address 172.16.4.34 255.255.255.224
 no sh
 exit
 
@@ -182,7 +215,7 @@ network 172.16.4.64 255.255.255.224
 default-router 172.16.4.65 255.255.255.224
 exit
 int vlan 30
-ip address 172.16.4.67 255.255.255.224
+ip address 172.16.4.66 255.255.255.224
 no sh
 exit
 
@@ -191,7 +224,7 @@ network 172.16.4.96 255.255.255.224
 default-router 172.16.4.97 255.255.255.224
 exit
 int vlan 31
-ip address 172.16.4.99 255.255.255.224
+ip address 172.16.4.98 255.255.255.224
 no sh
 
 ip dhcp pool ctshi
@@ -199,7 +232,7 @@ network 172.16.4.128 255.255.255.224
 default-router 172.16.4.129 255.255.255.224
 exit
 int vlan 32
-ip address 172.16.4.131 255.255.255.224
+ip address 172.16.4.130 255.255.255.224
 no sh
 exit
 ip dhcp excluded-add 172.16.4.33 172.16.4.36
@@ -214,41 +247,26 @@ ip dhcp excluded-add 172.16.4.148 172.16.4.158
 
 int vlan 29
 vrrp 32 ip 172.16.4.33
-vrrp 33 ip 172.16.4.34
 vrrp 32 priority 150
-vrrp 33 priority 100
-vrrp 32 preempt
-vrrp 33 preempt
 no sh
 exit
 
 int vlan 30
-vrrp 34 ip 172.16.4.65
-vrrp 35 ip 172.16.4.66
-vrrp 34 priority 150
-vrrp 35 priority 100
-vrrp 34 preempt
-vrrp 35 preempt
+vrrp 33 ip 172.16.4.65
+vrrp 33 priority 150
+
 no sh
 exit
 
 int vlan 31
-vrrp 36 ip 172.16.4.97
-vrrp 37 ip 172.16.4.98
-vrrp 36 priority 100
-vrrp 37 priority 150
-vrrp 36 preempt
-vrrp 37 preempt
+vrrp 34 ip 172.16.4.97
+vrrp 34 priority 150
 no sh
 exit
 
 int vlan 32
-vrrp 38 ip 172.16.4.129
-vrrp 39 ip 172.16.4.130
-vrrp 38 priority 100
-vrrp 39 priority 150
-vrrp 38 preempt
-vrrp 39 preempt
+vrrp 35 ip 172.16.4.129
+vrrp 35 priority 150
 no sh
 exit
 
@@ -256,7 +274,7 @@ exit
 DS2的三层配置
 
 service dhcp
-ip dhcp pool huyan
+ip dhcp pool huayan
 network 172.16.4.32 255.255.255.224
 default-router 172.16.4.34 255.255.255.224
 exit
@@ -299,43 +317,69 @@ ip dhcp excluded-add 172.16.4.129 172.16.4.147
 
 int vlan 29
 vrrp 32 ip 172.16.4.33
-vrrp 33 ip 172.16.4.34
-vrrp 32 priority 100
-vrrp 33 priority 150
-vrrp 32 preempt
-vrrp 33 preempt
+vrrp 32 priority 150
 no sh
 exit
 
 int vlan 30
-vrrp 34 ip 172.16.4.65
-vrrp 35 ip 172.16.4.66
-vrrp 34 priority 100
-vrrp 35 priority 150
-vrrp 34 preempt
-vrrp 35 preempt
+vrrp 33 ip 172.16.4.65
+vrrp 33 priority 150
+
 no sh
 exit
 
 int vlan 31
-vrrp 36 ip 172.16.4.97
-vrrp 37 ip 172.16.4.98
-vrrp 36 priority 150
-vrrp 37 priority 100
-vrrp 36 preempt
-vrrp 37 preempt
+vrrp 34 ip 172.16.4.97
+vrrp 34 priority 150
 no sh
 exit
 
 int vlan 32
-vrrp 38 ip 172.16.4.129
-vrrp 39 ip 172.16.4.130
-vrrp 38 priority 150
-vrrp 39 priority 100
-vrrp 38 preempt
-vrrp 39 preempt
+vrrp 35 ip 172.16.4.129
+vrrp 35 priority 150
 no sh
 exit
+
+``````````````````````````````````````````
+
+````````````````````````````````````````````
+DS5
+
+conf t
+int e1/0
+no switch
+ip add 172.16.4.2 255.255.255.252
+no sh
+ex
+
+int e1/1
+no switch
+ip add 172.16.4.10 255.255.255.252
+no sh
+ex
+
+router ospf 1
+network 0.0.0.0 0.0.0.0 area 3
+
+``````````````````````````````````````````
+DS6
+
+conf t
+int e1/0
+no switch
+ip add 172.16.4.6 255.255.255.252
+no sh
+ex
+
+int e1/1
+no switch 
+ip add 172.16.4.14 255.255.255.252
+no sh
+ex
+
+router ospf 1
+network 0.0.0.0 0.0.0.0 area 3
+
 
 ``````````````````````````
 PC的配置

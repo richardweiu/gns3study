@@ -12,20 +12,96 @@ no sh
 ex
 
 int e0/1
-ip add 172.16.11.1 255.255.255.252
+ip add 172.16.5.1 255.255.255.252
 ip nat inside
 no sh
 ex
 
 ip nat inside source list 1 inter s2/0
-access-list 1 permit 172.16.0.0 0.0.255.255
+access-list 1 permit 172.16.3.0 0.0.0.255
+access-list 1 permit 172.16.4.0 0.0.0.255
+access-list 1 permit 172.16.5.0 0.0.0.255
+access-list 1 permit 172.16.10.0 0.0.0.255
+
 
 ip route 0.0.0.0 0.0.0.0 202.106.1.1
 
 router ospf 1
 network 172.16.10.3 0.0.0.0 area 0
-network 172.16.11.1 0.0.0.0 area 0
-redistribute static //这个用于eigrp上面，，这里不要这个
+network 172.16.5.1 0.0.0.0 area 0
 default-information originate
 
+int e0/2
+ip add 192.168.1.2 255.255.255.0
+no sh
+ex
 
+ip nat inside source static 192.168.1.1 100.1.1.6
+
+
+zone security internet
+exit
+zone security dmz
+exit 
+zone security private 
+exit
+int range e0/0-1
+zone-member security private
+exit
+int s2/0
+zone-member security internet
+exit
+int e0/2
+zone-member security dmz
+exit
+
+class-map type inspect match-any pri-to-int
+match access-group 1
+exit
+
+class-map type inspect match-any pri-to-dmz 
+match protocol icmp 
+exit
+
+class-map type inspect match-any int-to-dmz 
+match protocol icmp 
+exit
+
+policy-map type inspect private-to-dmz 
+class type inspect pri-to-dmz 
+inspect 
+ex
+class class-default 
+drop 
+ex
+ex
+
+policy-map type inspect private-to-internet 
+class type inspect pri-to-int 
+inspect 
+ex
+class class-default 
+drop
+ex 
+ex
+
+policy-map type inspect internet-to-dmz 
+class type inspect int-to-dmz 
+inspect 
+ex
+class class-default 
+drop 
+ex
+ex
+
+zone-pair security private-internet source private destination internet 
+service-policy type inspect private-to-internet 
+ex
+
+zone-pair security internet-dmz source internet destination dmz 
+service-policy type inspect internet-to-dmz 
+ex
+
+zone-pair security private-dmz source private destination dmz 
+service-policy type inspect private-to-dmz 
+ex

@@ -121,9 +121,11 @@ ip dhcp snooping vlan 3
 ip dhcp snooping vlan 4
 ip dhcp snooping vlan 5
 no ip dhcp snooping information option
+ip arp inspection vlan 2-5
 
 int rang e0/0-1
 ip dhcp snooping trust
+ip arp inspection trust
 
 int e0/2
 switch mode acc
@@ -167,9 +169,11 @@ ip dhcp snooping vlan 3
 ip dhcp snooping vlan 4
 ip dhcp snooping vlan 5
 no ip dhcp snooping information option
+ip arp inspection vlan 2-5
 
 int rang e0/0-1
 ip dhcp snooping trust
+ip arp inspection trust
 
 int range e0/2
 switch mode acc
@@ -275,7 +279,7 @@ default-router 172.16.0.33 255.255.255.224
 exit
 int vlan 2
 ip address 172.16.0.35 255.255.255.224
-sh
+no sh
 exit
 
 ip dhcp pool neike
@@ -284,7 +288,7 @@ default-router 172.16.0.65 255.255.255.224
 exit
 int vlan 3
 ip address 172.16.0.67 255.255.255.224
-sh
+no sh
 exit
 
 ip dhcp pool waike
@@ -293,7 +297,7 @@ default-router 172.16.0.97 255.255.255.224
 exit
 int vlan 4
 ip address 172.16.0.99 255.255.255.224
-sh
+no sh
 exit
 
 ip dhcp pool pifu
@@ -302,7 +306,7 @@ default-router 172.16.0.129 255.255.255.224
 exit
 int vlan 5
 ip address 172.16.0.131 255.255.255.224
-sh
+no sh
 exit
 
 ip dhcp excluded-add 172.16.0.33 172.16.0.51
