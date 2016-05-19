@@ -1,0 +1,15 @@
+conf t
+int e0/0
+ip add 172.16.6.34 255.255.255.224
+no sh
+ex
+
+enable secret wei
+line vty 0 4
+password richard
+login 
+transport input telnet
+
+aaa new-model
+aaa authentication login default local
+username richard password richardwei

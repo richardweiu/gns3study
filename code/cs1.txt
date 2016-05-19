@@ -59,6 +59,12 @@ no switch
 ip add 172.16.4.5 255.255.255.252
 no sh
 ex
+int e2/0
+no switch
+ip add 172.16.6.1 255.255.255.252
+no sh
+ex
+
 
 router ospf 1
 network 172.16.0.1 0.0.0.0 area 1
@@ -67,6 +73,7 @@ network 172.16.3.1 0.0.0.0 area 2
 network 172.16.3.5 0.0.0.0 area 2
 network 172.16.4.1 0.0.0.0 area 3
 network 172.16.4.5 0.0.0.0 area 3
+network 172.16.6.1 0.0.0.0 area 4
 
 int e2/1
 no swit
@@ -139,6 +146,11 @@ no switch
 ip add 172.16.4.13 255.255.255.252
 no sh
 ex
+int e2/0
+no switch
+ip add 172.16.6.5 255.255.255.252
+no sh
+ex
 
 router ospf 1
 network 172.16.0.9 0.0.0.0 area 1
@@ -147,6 +159,7 @@ network 172.16.3.9 0.0.0.0 area 2
 network 172.16.3.13 0.0.0.0 area 2
 network 172.16.4.9 0.0.0.0 area 3
 network 172.16.4.13 0.0.0.0 area 3
+network 172.16.6.5 0.0.0.0 area 4
 
 int e2/1
 no switch

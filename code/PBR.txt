@@ -21,6 +21,7 @@ ip nat inside source list 1 inter s2/0
 access-list 1 permit 172.16.3.0 0.0.0.255
 access-list 1 permit 172.16.4.0 0.0.0.255
 access-list 1 permit 172.16.5.0 0.0.0.255
+access-list 1 permit 172.16.6.0 0.0.0.255
 access-list 1 permit 172.16.10.0 0.0.0.255
 
 
@@ -36,7 +37,7 @@ ip add 192.168.1.2 255.255.255.0
 no sh
 ex
 
-ip nat inside source static 192.168.1.1 100.1.1.6
+ip nat inside source static 192.168.1.1 202.106.1.2
 
 
 zone security internet
@@ -61,12 +62,31 @@ exit
 
 class-map type inspect match-any pri-to-dmz 
 match protocol icmp 
+match protocol ipsec-msft
 exit
 
 class-map type inspect match-any int-to-dmz 
 match protocol icmp 
 exit
+``````````````````````````````````````````````````
+class-map type inspect match-any out-vpn 
+match protocol ipsec-msft
+exit
 
+policy-map type inspect out-vpn 
+class type inspect out-vpn 
+inspect 
+ex
+class class-default 
+drop 
+ex
+ex
+
+zone-pair security out-vpn source internet destination private 
+service-policy type inspect out-vpn 
+ex
+
+```````````````````````````````````````````````````
 policy-map type inspect private-to-dmz 
 class type inspect pri-to-dmz 
 inspect 
@@ -105,3 +125,30 @@ ex
 zone-pair security private-dmz source private destination dmz 
 service-policy type inspect private-to-dmz 
 ex
+
+
+
+
+crypto isakmp enable  
+crypto isakmp policy 10
+authentication pre-share
+hash sha
+encryption aes 256
+group 5
+lifetime 3600
+exit
+crypto isakmp key 123 address 202.106.2.2
+crypto isakmp keepalive 10 2 periodic
+crypto ipsec transform-set myset esp-aes 256 esp-sha-hmac
+mode tunnel
+
+access-list 101 permit ip 172.16.6.0 0.0.0.255 202.106.2.2 0.0.0.0 
+crypto map client-inside 10 ipsec-isakmp 
+ set peer 202.106.2.2
+ set transform-set myset 
+ match address 101
+
+int s2/0
+crypto map client-inside
+ex
+

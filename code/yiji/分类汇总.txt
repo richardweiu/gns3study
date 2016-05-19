@@ -54,7 +54,7 @@ spanning-tree mst 1 root primary
 spanning-tree mst 2 root sec
 
 `````````````````````````````````````````````
-DS2汇聚的交换机配置
+DS6汇聚的交换机配置
 conf t
 hostname DS6
 
@@ -104,7 +104,7 @@ spanning-tree mst 2 root primary
 spanning-tree mst 1 root sec
 
 ``````````````````````````````````````````````
-AS1接入的交换机配置1
+AS5接入的交换机配置1
 conf t
 hostname AS5
 
@@ -150,7 +150,7 @@ no sh
 ex
 
 ````````````````````````````````````````````
-AS4接入的交换机配置
+AS6接入的交换机配置
 conf t
 hostname AS6
 
