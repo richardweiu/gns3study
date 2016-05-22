@@ -1,0 +1,47 @@
+conf t
+int s2/1
+ip add 203.106.1.2 255.255.255.0
+ip nat outside
+no sh
+ex
+int e0/0
+ip add 193.168.1.1 255.255.255.0
+ip nat inside
+no sh
+ex
+ip route 0.0.0.0 0.0.0.0 203.106.1.1
+
+ip access-list extended GoInternet
+permit ip 193.168.1.0 0.0.0.255 any
+exit
+ip nat inside source list GoInternet interface s2/1 overload
+
+crypto isakmp enable  
+crypto isakmp policy 10
+authentication pre-share
+hash md5
+encryption 3des
+group 1
+lifetime 3600
+exit
+crypto isakmp key cisco address 0.0.0.0
+crypto isakmp keepalive 10 2 periodic
+crypto ipsec transform-set myset esp-3des esp-md5-hmac
+exit
+crypto ipsec profile myset 
+set transform-set myset 
+exit
+
+interface Tunnel 0
+ip address 172.16.7.2 255.255.255.0
+tunnel source s2/1
+tunnel destination 202.106.1.2
+tunnel mode ipsec ipv4
+tunnel protection ipsec profile myset
+exit
+
+router ospf 1
+net 193.168.1.0 0.0.0.255 area 0
+net 172.16.7.0 0.0.0.255 area 0
+default-information originate
+exit

@@ -69,20 +69,39 @@ class-map type inspect match-any int-to-dmz
 match protocol icmp 
 exit
 ``````````````````````````````````````````````````
-class-map type inspect match-any out-vpn 
-match protocol ipsec-msft
+ip access-list extended ICMP
+no permit icmp any host 172.16.6.34 echo
+no permit icmp any host 172.16.6.34 echo-reply
+no permit icmp any host 172.16.6.34 traceroute
+exit
+ip access-list extended ISAKMP_IPSEC
+ permit udp any any eq isakmp
+ permit ahp any any
+ permit esp any any
+ permit udp any any eq non500-isakmp
+exit
+
+class-map type inspect match-all ICMP-cmap
+ match access-group name ICMP
+exit
+
+class-map type inspect match-all IPSEC-cmap
+ match access-group name ISAKMP_IPSEC
 exit
 
 policy-map type inspect out-vpn 
-class type inspect out-vpn 
-inspect 
-ex
-class class-default 
-drop 
+class type inspect ICMP-cmap
+inspect
+exit
+class type inspect IPSEC-cmap
+pass
+exit
+class class-default
+drop
 ex
 ex
 
-zone-pair security out-vpn source internet destination private 
+zone-pair security out-vpn source internet destination self
 service-policy type inspect out-vpn 
 ex
 
@@ -127,28 +146,30 @@ service-policy type inspect private-to-dmz
 ex
 
 
-
-
-crypto isakmp enable  
+crypto isakmp enable
 crypto isakmp policy 10
 authentication pre-share
-hash sha
-encryption aes 256
-group 5
+hash md5
+encryption 3des
+group 1
 lifetime 3600
 exit
-crypto isakmp key 123 address 202.106.2.2
+crypto isakmp key cisco address 0.0.0.0
 crypto isakmp keepalive 10 2 periodic
-crypto ipsec transform-set myset esp-aes 256 esp-sha-hmac
-mode tunnel
+crypto ipsec transform-set myset esp-3des esp-md5-hmac
+exit
+crypto ipsec profile myset 
+set transform-set myset 
+exit
 
-access-list 101 permit ip 172.16.6.0 0.0.0.255 202.106.2.2 0.0.0.0 
-crypto map client-inside 10 ipsec-isakmp 
- set peer 202.106.2.2
- set transform-set myset 
- match address 101
-
-int s2/0
-crypto map client-inside
-ex
+interface Tunnel 0
+ip address 172.16.7.1 255.255.255.0
+tunnel source s2/0
+tunnel destination 203.106.1.2
+tunnel mode ipsec ipv4
+tunnel protection ipsec profile myset
+exit
+  
+router ospf 1
+network 172.16.7.1 0.0.0.0 area 0
 
