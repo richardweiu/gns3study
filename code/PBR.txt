@@ -70,9 +70,9 @@ match protocol icmp
 exit
 ``````````````````````````````````````````````````
 ip access-list extended ICMP
-no permit icmp any host 172.16.6.34 echo
-no permit icmp any host 172.16.6.34 echo-reply
-no permit icmp any host 172.16.6.34 traceroute
+permit icmp any host 172.16.6.34 echo
+permit icmp any host 172.16.6.34 echo-reply
+permit icmp any host 172.16.6.34 traceroute
 exit
 ip access-list extended ISAKMP_IPSEC
  permit udp any any eq isakmp
