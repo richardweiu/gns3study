@@ -62,7 +62,6 @@ exit
 
 class-map type inspect match-any pri-to-dmz 
 match protocol icmp 
-match protocol ipsec-msft
 exit
 
 class-map type inspect match-any int-to-dmz 
